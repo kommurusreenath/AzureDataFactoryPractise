@@ -1,0 +1,9 @@
+{
+	"name": "datafactorypractise01",
+	"location": "southindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "37466ab8-0bf5-4ab5-9d8a-6ac9d62a2756",
+		"tenantId": "8fd4e2ce-55a7-4936-98f6-9a3719848f6e"
+	}
+}
