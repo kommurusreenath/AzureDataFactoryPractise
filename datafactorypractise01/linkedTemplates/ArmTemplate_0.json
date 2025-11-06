@@ -241,8 +241,6 @@
 								{
 									"name": "Copy data1",
 									"type": "Copy",
-									"state": "Inactive",
-									"onInactiveMarkAs": "Succeeded",
 									"dependsOn": [],
 									"policy": {
 										"timeout": "0.12:00:00",
@@ -277,12 +275,8 @@
 										},
 										"enableStaging": false,
 										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
+											"value": "@activity('Lookup1').output.firstRow.@{item().name}",
+											"type": "Expression"
 										}
 									},
 									"inputs": [
