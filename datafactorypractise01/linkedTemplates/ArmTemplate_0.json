@@ -391,10 +391,12 @@
 						"type": "string"
 					},
 					"p_sink_container": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "target"
 					},
 					"p_sink_folder": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "files"
 					},
 					"p_sink_file": {
 						"type": "string"
