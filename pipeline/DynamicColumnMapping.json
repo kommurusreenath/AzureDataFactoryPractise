@@ -17,19 +17,260 @@
 				"typeProperties": {
 					"dataset": {
 						"referenceName": "ds_csv_getmetadata",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.p_source_container",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().parameters.p_source_folder",
+								"type": "Expression"
+							}
+						}
 					},
-					"fieldList": [],
+					"fieldList": [
+						"childItems"
+					],
 					"storeSettings": {
 						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
 						"type": "DelimitedTextReadSettings"
 					}
 				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata1').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"state": "Inactive",
+							"onInactiveMarkAs": "Succeeded",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"name": "Countries",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Countries",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "gold_demand",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "gold_demand",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "2020",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "2020",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "2021",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "2021",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "2022",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "2022",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "2023",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "2023",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Average demand",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Average demand",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Year-on-year % change",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Year-on-year % change",
+												"type": "String",
+												"physicalType": "String"
+											}
+										}
+									],
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "ds_datalake_file",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": {
+											"value": "@pipeline().parameters.p_source_container",
+											"type": "Expression"
+										},
+										"folder": {
+											"value": "@pipeline().parameters.p_source_folder",
+											"type": "Expression"
+										},
+										"file": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ds_datalake_file",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": {
+											"value": "@pipeline().parameters.p_sink_container",
+											"type": "Expression"
+										},
+										"folder": {
+											"value": "@pipeline().parameters.p_sink_folder",
+											"type": "Expression"
+										},
+										"file": {
+											"value": "@pipeline().parameters.p_sink_file",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
 			}
 		],
+		"parameters": {
+			"p_source_container": {
+				"type": "string"
+			},
+			"p_source_folder": {
+				"type": "string"
+			},
+			"p_source_file": {
+				"type": "string"
+			},
+			"p_sink_container": {
+				"type": "string"
+			},
+			"p_sink_folder": {
+				"type": "string"
+			},
+			"p_sink_file": {
+				"type": "string"
+			}
+		},
 		"annotations": []
 	}
 }
