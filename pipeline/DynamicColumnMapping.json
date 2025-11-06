@@ -98,7 +98,7 @@
 								},
 								"enableStaging": false,
 								"translator": {
-									"value": "@activity('Lookup1').output.firstRow.@{item().name}",
+									"value": "@json(concat(activity('Lookup1').output.firstRow,'.',item().name))",
 									"type": "Expression"
 								}
 							},
