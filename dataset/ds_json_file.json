@@ -1,5 +1,5 @@
 {
-	"name": "ds_csv_folder",
+	"name": "ds_json_file",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_datalake",
@@ -11,13 +11,20 @@
 			},
 			"folder": {
 				"type": "string"
+			},
+			"file": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
-		"type": "DelimitedText",
+		"type": "Json",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().file",
+					"type": "Expression"
+				},
 				"folderPath": {
 					"value": "@dataset().folder",
 					"type": "Expression"
@@ -26,12 +33,8 @@
 					"value": "@dataset().container",
 					"type": "Expression"
 				}
-			},
-			"columnDelimiter": ",",
-			"escapeChar": "\\",
-			"firstRowAsHeader": true,
-			"quoteChar": "\""
+			}
 		},
-		"schema": []
+		"schema": {}
 	}
 }

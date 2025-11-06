@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "ds_csv_getmetadata",
+						"referenceName": "ds_csv_folder",
 						"type": "DatasetReference",
 						"parameters": {
 							"container": {
@@ -47,7 +47,7 @@
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Get Metadata1",
+						"activity": "Lookup1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -101,104 +101,6 @@
 								"enableStaging": false,
 								"translator": {
 									"type": "TabularTranslator",
-									"mappings": [
-										{
-											"source": {
-												"name": "Countries",
-												"type": "String",
-												"physicalType": "String"
-											},
-											"sink": {
-												"name": "Countries",
-												"type": "String",
-												"physicalType": "String"
-											}
-										},
-										{
-											"source": {
-												"name": "gold_demand",
-												"type": "String",
-												"physicalType": "String"
-											},
-											"sink": {
-												"name": "gold_demand",
-												"type": "String",
-												"physicalType": "String"
-											}
-										},
-										{
-											"source": {
-												"name": "2020",
-												"type": "String",
-												"physicalType": "String"
-											},
-											"sink": {
-												"name": "2020",
-												"type": "String",
-												"physicalType": "String"
-											}
-										},
-										{
-											"source": {
-												"name": "2021",
-												"type": "String",
-												"physicalType": "String"
-											},
-											"sink": {
-												"name": "2021",
-												"type": "String",
-												"physicalType": "String"
-											}
-										},
-										{
-											"source": {
-												"name": "2022",
-												"type": "String",
-												"physicalType": "String"
-											},
-											"sink": {
-												"name": "2022",
-												"type": "String",
-												"physicalType": "String"
-											}
-										},
-										{
-											"source": {
-												"name": "2023",
-												"type": "String",
-												"physicalType": "String"
-											},
-											"sink": {
-												"name": "2023",
-												"type": "String",
-												"physicalType": "String"
-											}
-										},
-										{
-											"source": {
-												"name": "Average demand",
-												"type": "String",
-												"physicalType": "String"
-											},
-											"sink": {
-												"name": "Average demand",
-												"type": "String",
-												"physicalType": "String"
-											}
-										},
-										{
-											"source": {
-												"name": "Year-on-year % change",
-												"type": "String",
-												"physicalType": "String"
-											},
-											"sink": {
-												"name": "Year-on-year % change",
-												"type": "String",
-												"physicalType": "String"
-											}
-										}
-									],
 									"typeConversion": true,
 									"typeConversionSettings": {
 										"allowDataTruncation": true,
@@ -208,7 +110,7 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "ds_datalake_file",
+									"referenceName": "ds_csv_file",
 									"type": "DatasetReference",
 									"parameters": {
 										"container": {
@@ -228,7 +130,7 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "ds_datalake_file",
+									"referenceName": "ds_csv_file",
 									"type": "DatasetReference",
 									"parameters": {
 										"container": {
@@ -240,7 +142,7 @@
 											"type": "Expression"
 										},
 										"file": {
-											"value": "@pipeline().parameters.p_sink_file",
+											"value": "@item().name",
 											"type": "Expression"
 										}
 									}
@@ -249,14 +151,67 @@
 						}
 					]
 				}
+			},
+			{
+				"name": "Lookup1",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "ds_json_file",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.p_mappingfile_container",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().parameters.p_mappingfile_folder",
+								"type": "Expression"
+							},
+							"file": {
+								"value": "@pipeline().parameters.p_mappingfile_file",
+								"type": "Expression"
+							}
+						}
+					}
+				}
 			}
 		],
 		"parameters": {
 			"p_source_container": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "source"
 			},
 			"p_source_folder": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "files"
 			},
 			"p_source_file": {
 				"type": "string"
@@ -269,6 +224,18 @@
 			},
 			"p_sink_file": {
 				"type": "string"
+			},
+			"p_mappingfile_container": {
+				"type": "string",
+				"defaultValue": "source"
+			},
+			"p_mappingfile_folder": {
+				"type": "string",
+				"defaultValue": "others"
+			},
+			"p_mappingfile_file": {
+				"type": "string",
+				"defaultValue": "dynamicmapping.json"
 			}
 		},
 		"annotations": []
