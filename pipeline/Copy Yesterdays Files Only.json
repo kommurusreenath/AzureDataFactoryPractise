@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "ds_csv_folder",
+						"referenceName": "ds_adls_csv_folder",
 						"type": "DatasetReference",
 						"parameters": {
 							"container": {
@@ -108,7 +108,7 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "ds_csv_file",
+									"referenceName": "ds_adls_csv_file",
 									"type": "DatasetReference",
 									"parameters": {
 										"container": {
@@ -128,7 +128,7 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "ds_csv_file",
+									"referenceName": "ds_adls_csv_file",
 									"type": "DatasetReference",
 									"parameters": {
 										"container": {

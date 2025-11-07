@@ -135,7 +135,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "ds_csv_file",
+						"referenceName": "ds_adls_csv_file",
 						"type": "DatasetReference",
 						"parameters": {
 							"container": "source",
@@ -146,7 +146,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "ds_csv_file",
+						"referenceName": "ds_adls_csv_file",
 						"type": "DatasetReference",
 						"parameters": {
 							"container": "target",
