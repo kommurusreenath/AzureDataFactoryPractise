@@ -1,0 +1,162 @@
+{
+	"name": "Delete Aged Files from Data Lake",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Metadata1",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "ds_csv_folder",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.p_source_container",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().parameters.p_source_folder",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"modifiedDatetimeStart": {
+							"value": "@startOfDay(addDays(utcnow(), mul(pipeline().parameters.p_olderThanDays,-1)))",
+							"type": "Expression"
+						},
+						"modifiedDatetimeEnd": {
+							"value": "@startOfDay(utcnow())",
+							"type": "Expression"
+						},
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata1').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Delete1",
+							"type": "Delete",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "ds_csv_file",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": {
+											"value": "@pipeline().parameters.p_source_container",
+											"type": "Expression"
+										},
+										"folder": {
+											"value": "@pipeline().parameters.p_source_folder",
+											"type": "Expression"
+										},
+										"file": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								},
+								"enableLogging": false,
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"p_source_container": {
+				"type": "string",
+				"defaultValue": "source"
+			},
+			"p_source_folder": {
+				"type": "string",
+				"defaultValue": "files"
+			},
+			"p_source_file": {
+				"type": "string"
+			},
+			"p_sink_container": {
+				"type": "string",
+				"defaultValue": "target"
+			},
+			"p_sink_folder": {
+				"type": "string",
+				"defaultValue": "files"
+			},
+			"p_sink_file": {
+				"type": "string"
+			},
+			"p_mappingfile_container": {
+				"type": "string",
+				"defaultValue": "source"
+			},
+			"p_mappingfile_folder": {
+				"type": "string",
+				"defaultValue": "others/dynamicmapping"
+			},
+			"p_mappingfile_file": {
+				"type": "string",
+				"defaultValue": "dynamicmapping.json"
+			},
+			"p_olderThanDays": {
+				"type": "int",
+				"defaultValue": 1
+			}
+		},
+		"variables": {
+			"mapping": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
