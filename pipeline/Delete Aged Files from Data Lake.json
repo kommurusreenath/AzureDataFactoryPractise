@@ -35,12 +35,8 @@
 					"storeSettings": {
 						"type": "AzureBlobFSReadSettings",
 						"recursive": true,
-						"modifiedDatetimeStart": {
-							"value": "@startOfDay(addDays(utcnow(), mul(pipeline().parameters.p_olderThanDays,-1)))",
-							"type": "Expression"
-						},
 						"modifiedDatetimeEnd": {
-							"value": "@startOfDay(utcnow())",
+							"value": "@startOfDay(addDays(utcnow(), mul(pipeline().parameters.p_olderThanDays,-1)))",
 							"type": "Expression"
 						},
 						"enablePartitionDiscovery": false
