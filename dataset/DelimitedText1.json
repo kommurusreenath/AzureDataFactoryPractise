@@ -1,0 +1,28 @@
+{
+	"name": "DelimitedText1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_datalake",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "employees.txt",
+				"folderPath": "others/fixedlengthtextfiles",
+				"fileSystem": "source"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": false,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"type": "String"
+			}
+		]
+	}
+}
