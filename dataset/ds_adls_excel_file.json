@@ -1,5 +1,5 @@
 {
-	"name": "ds_adls_folder",
+	"name": "ds_adls_excel_file",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_datalake",
@@ -11,13 +11,23 @@
 			},
 			"folder": {
 				"type": "string"
+			},
+			"file": {
+				"type": "string"
+			},
+			"sheetIndex": {
+				"type": "int"
 			}
 		},
 		"annotations": [],
-		"type": "DelimitedText",
+		"type": "Excel",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().file",
+					"type": "Expression"
+				},
 				"folderPath": {
 					"value": "@dataset().folder",
 					"type": "Expression"
@@ -27,10 +37,11 @@
 					"type": "Expression"
 				}
 			},
-			"columnDelimiter": ",",
-			"escapeChar": "\\",
-			"firstRowAsHeader": true,
-			"quoteChar": "\""
+			"sheetIndex": {
+				"value": "@dataset().sheetIndex",
+				"type": "Expression"
+			},
+			"firstRowAsHeader": true
 		},
 		"schema": []
 	}
