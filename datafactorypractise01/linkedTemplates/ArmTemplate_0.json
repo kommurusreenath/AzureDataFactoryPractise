@@ -332,6 +332,248 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Copy Excel Sheets to CSV Dynamically')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Until1",
+						"type": "Until",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@variables('condition')",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "ExcelSource",
+											"storeSettings": {
+												"type": "AzureBlobFSReadSettings",
+												"recursive": true,
+												"enablePartitionDiscovery": false
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "ds_adls_excel_file",
+											"type": "DatasetReference",
+											"parameters": {
+												"container": {
+													"value": "@pipeline().parameters.p_source_container",
+													"type": "Expression"
+												},
+												"folder": {
+													"value": "@pipeline().parameters.p_source_folder",
+													"type": "Expression"
+												},
+												"file": {
+													"value": "@pipeline().parameters.p_source_file",
+													"type": "Expression"
+												},
+												"sheetIndex": {
+													"value": "@variables('index')",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "ds_adls_csv_file",
+											"type": "DatasetReference",
+											"parameters": {
+												"container": {
+													"value": "@pipeline().parameters.p_sink_container",
+													"type": "Expression"
+												},
+												"folder": {
+													"value": "@pipeline().parameters.p_sink_folder",
+													"type": "Expression"
+												},
+												"file": {
+													"value": "@concat(replace(pipeline().parameters.p_source_file,'.xlsx',''),'_',variables('index'),'.csv')",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "Set variable1",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Copy data1",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "tempIndex",
+										"value": {
+											"value": "@add(variables('index'),1)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set variable2",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set variable1",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "index",
+										"value": {
+											"value": "@variables('tempIndex')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set variable3",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Copy data1",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "condition",
+										"value": {
+											"value": "@bool(1)",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"timeout": "0.12:00:00"
+						}
+					},
+					{
+						"name": "Wait1",
+						"type": "Wait",
+						"dependsOn": [
+							{
+								"activity": "Until1",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"p_source_container": {
+						"type": "string",
+						"defaultValue": "source"
+					},
+					"p_source_folder": {
+						"type": "string",
+						"defaultValue": "others/excelfile"
+					},
+					"p_source_file": {
+						"type": "string",
+						"defaultValue": "excelFileSheets.xlsx"
+					},
+					"p_sink_container": {
+						"type": "string",
+						"defaultValue": "target"
+					},
+					"p_sink_folder": {
+						"type": "string",
+						"defaultValue": "files"
+					}
+				},
+				"variables": {
+					"condition": {
+						"type": "Boolean"
+					},
+					"index": {
+						"type": "Integer",
+						"defaultValue": 0
+					},
+					"tempIndex": {
+						"type": "Integer",
+						"defaultValue": 0
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_adls_excel_file')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_csv_file')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Copy Only Missing Files 2')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
