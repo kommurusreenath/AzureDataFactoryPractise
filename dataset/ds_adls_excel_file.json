@@ -1,5 +1,5 @@
 {
-	"name": "ds_adls_excel_file_sheet",
+	"name": "ds_adls_excel_file",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_datalake",
