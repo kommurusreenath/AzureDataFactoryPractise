@@ -40,7 +40,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataset": {
-								"referenceName": "ds_adls_csv_folder",
+								"referenceName": "ds_adls_folder",
 								"type": "DatasetReference",
 								"parameters": {
 									"container": {
@@ -80,7 +80,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataset": {
-								"referenceName": "ds_adls_csv_folder",
+								"referenceName": "ds_adls_folder",
 								"type": "DatasetReference",
 								"parameters": {
 									"container": {
@@ -291,7 +291,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_adls_csv_folder')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_folder')]",
 				"[concat(variables('factoryId'), '/datasets/ds_adls_csv_file')]"
 			]
 		},
@@ -315,7 +315,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataset": {
-								"referenceName": "ds_adls_csv_folder",
+								"referenceName": "ds_adls_folder",
 								"type": "DatasetReference",
 								"parameters": {
 									"container": {
@@ -475,7 +475,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataset": {
-								"referenceName": "ds_adls_csv_folder",
+								"referenceName": "ds_adls_folder",
 								"type": "DatasetReference",
 								"parameters": {
 									"container": {
@@ -549,7 +549,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_adls_csv_folder')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_folder')]",
 				"[concat(variables('factoryId'), '/datasets/ds_adls_csv_file')]"
 			]
 		},
@@ -573,7 +573,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataset": {
-								"referenceName": "ds_adls_csv_folder",
+								"referenceName": "ds_adls_folder",
 								"type": "DatasetReference",
 								"parameters": {
 									"container": {
@@ -759,7 +759,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_adls_csv_folder')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_folder')]",
 				"[concat(variables('factoryId'), '/datasets/ds_adls_csv_file')]"
 			]
 		},
@@ -783,7 +783,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataset": {
-								"referenceName": "ds_adls_csv_folder",
+								"referenceName": "ds_adls_folder",
 								"type": "DatasetReference",
 								"parameters": {
 									"container": {
@@ -926,7 +926,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_adls_csv_folder')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_folder')]",
 				"[concat(variables('factoryId'), '/datasets/ds_adls_csv_file')]"
 			]
 		},
@@ -950,7 +950,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataset": {
-								"referenceName": "ds_adls_csv_folder",
+								"referenceName": "ds_adls_folder",
 								"type": "DatasetReference",
 								"parameters": {
 									"container": {
@@ -1123,7 +1123,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_adls_csv_folder')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_folder')]",
 				"[concat(variables('factoryId'), '/datasets/ds_adls_csv_file')]"
 			]
 		},
@@ -1147,7 +1147,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataset": {
-								"referenceName": "ds_adls_csv_folder",
+								"referenceName": "ds_adls_folder",
 								"type": "DatasetReference",
 								"parameters": {
 									"container": {
@@ -1376,7 +1376,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_adls_csv_folder')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_folder')]",
 				"[concat(variables('factoryId'), '/datasets/ds_adls_csv_file')]",
 				"[concat(variables('factoryId'), '/datasets/ds_adls_json_file')]"
 			]
@@ -1708,7 +1708,60 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_adls_csv_folder')]",
+			"name": "[concat(parameters('factoryName'), '/ds_adls_excel_file')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_datalake",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"container": {
+						"type": "string"
+					},
+					"folder": {
+						"type": "string"
+					},
+					"file": {
+						"type": "string"
+					},
+					"sheetIndex": {
+						"type": "int"
+					}
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().file",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().folder",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().container",
+							"type": "Expression"
+						}
+					},
+					"sheetIndex": {
+						"value": "@dataset().sheetIndex",
+						"type": "Expression"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_datalake')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_adls_folder')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
