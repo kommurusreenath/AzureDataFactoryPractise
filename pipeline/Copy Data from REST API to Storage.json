@@ -1,0 +1,127 @@
+{
+	"name": "Copy Data from REST API to Storage",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "RestSource",
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010",
+						"requestMethod": "GET"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "['id']"
+								},
+								"sink": {
+									"name": "id"
+								}
+							},
+							{
+								"source": {
+									"path": "['email']"
+								},
+								"sink": {
+									"name": "email"
+								}
+							},
+							{
+								"source": {
+									"path": "['first_name']"
+								},
+								"sink": {
+									"name": "first_name"
+								}
+							},
+							{
+								"source": {
+									"path": "['last_name']"
+								},
+								"sink": {
+									"name": "last_name"
+								}
+							},
+							{
+								"source": {
+									"path": "['avatar']"
+								},
+								"sink": {
+									"name": "avatar"
+								}
+							}
+						],
+						"collectionReference": "$['data']"
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_rest_api",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_adls_csv_file",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.p_sink_container",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().parameters.p_sink_folder",
+								"type": "Expression"
+							},
+							"file": {
+								"value": "@pipeline().parameters.p_sink_file",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"p_sink_container": {
+				"type": "string",
+				"defaultValue": "target"
+			},
+			"p_sink_folder": {
+				"type": "string",
+				"defaultValue": "files"
+			},
+			"p_sink_file": {
+				"type": "string",
+				"defaultValue": "users.csv"
+			}
+		},
+		"annotations": []
+	}
+}
