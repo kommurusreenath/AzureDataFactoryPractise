@@ -25,6 +25,116 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/Check Weekday')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "weekDay",
+							"value": {
+								"value": "@dayOfWeek(addDays(utcnow(), 1) )",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "If Condition1",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Set variable1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@and(greaterOrEquals(variables('weekDay'),1), lessOrEquals(variables('weekDay'),5))",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Wait1",
+									"type": "Wait",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"waitTimeInSeconds": 1
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"weekDay": {
+						"type": "Integer"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Send Blob Folder Files via Email Attachment')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Web1",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {},
+							"url": "https://prod-19.southindia.logic.azure.com:443/workflows/0e57cf4bcbad4c60b3ecb2c743ca37fb/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=YfNQ4VFmf5YtVqZQ-ponuRlXuEzCo09J2X0PzxB8Xq4",
+							"body": {
+								"value": "{\n    \"owner\":\"sreenath\",\n    \"folderpath\":\"source/others/excelfile/\"\n}",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"filepaths": {
+						"type": "Array"
+					},
+					"paths": {
+						"type": "Array"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ls_datalake')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -2106,245 +2216,6 @@
 				"[concat(variables('factoryId'), '/datasets/ds_adls_folder')]",
 				"[concat(variables('factoryId'), '/datasets/ds_adls_csv_file')]",
 				"[concat(variables('factoryId'), '/datasets/ds_adls_json_file')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/test')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "country_demand_sector (tonnes)",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "country_demand_sector (tonnes)",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "2020",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "2020",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "2021",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "2021",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "2022",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "2022",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "2023",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "2023",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "Average",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Average",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "Prop_6",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Prop_6",
-											"type": "String",
-											"physicalType": "String"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_adls_csv_file",
-								"type": "DatasetReference",
-								"parameters": {
-									"container": "source",
-									"folder": "files",
-									"file": "gold_demand_sector.csv"
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_adls_csv_file",
-								"type": "DatasetReference",
-								"parameters": {
-									"container": "target",
-									"folder": "files",
-									"file": "gold_demand_sector.csv"
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_adls_csv_file')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/processFixedLengthTextFiles')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "DelimitedText1",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "DelimitedText2",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "derivedColumn1"
-						},
-						{
-							"name": "select1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          Column_1 as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> source1",
-						"source1 derive(Employee_ID = substring(Column_1, 1, 4),",
-						"          Employee_Name = substring(Column_1, 5, 10),",
-						"          state = substring(Column_1, 15, 2),",
-						"          contact = substring(Column_1, 17, 10)) ~> derivedColumn1",
-						"derivedColumn1 select(mapColumn(",
-						"          Employee_ID,",
-						"          Employee_Name,",
-						"          state,",
-						"          contact",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select1",
-						"select1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:['employees.csv'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DelimitedText1')]",
-				"[concat(variables('factoryId'), '/datasets/DelimitedText2')]"
 			]
 		}
 	]
